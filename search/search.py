@@ -133,13 +133,47 @@ def depth_first_search(problem):
     print("Start's successors:", problem.get_successors(problem.get_start_state()))
     """
     "*** YOUR CODE HERE ***"
+    print("Start:", problem.get_start_state())
+    print("Is the start a goal?", problem.is_goal_state(problem.get_start_state()))
+    print("Start's successors:", problem.get_successors(problem.get_start_state()))
+    
+    from util import Stack
+
+    # Initialize the frontier with the start state
+    frontier = Stack()
+    frontier.push((problem.get_start_state(), []))
+    
+    # Initialize an empty set to track visited nodes
+    visited = set()
+
+    while not frontier.is_empty():
+        # Get the current state and the path to reach it
+        state, path = frontier.pop()
+
+        # If the state is the goal, return the path
+        if problem.is_goal_state(state):
+            return path
+
+        # If the state has not been visited, expand it
+        if state not in visited:
+            visited.add(state)
+
+            # Add successors to the frontier
+            for successor, action, step_cost in problem.get_successors(state):
+                if successor not in visited:
+                    new_path = path + [action]
+                    frontier.push((successor, new_path))
+
+    # If no solution is found, raise an exception
     util.raise_not_defined()
+    
 
 
 
 def breadth_first_search(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
+    
     util.raise_not_defined()
 
 def uniform_cost_search(problem):
