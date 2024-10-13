@@ -159,8 +159,13 @@ def depth_first_search(problem):
             visited.add(state)
 
             # Add successors to the frontier
-            for successor, action, step_cost in problem.get_successors(state):
-                if successor not in visited:
+            successors = problem.get_successors(state)
+            print(f"Current state: {state}, Successors: {successors}")  # to look the order of the successors
+            #for successor, action, step_cost in problem.get_successors(state):
+                
+                #if successor not in visited:
+            for successor, action, step_cost in successors:
+                if successor not in visited : #and successor not in [s for s, _ in frontier.list]
                     new_path = path + [action]
                     frontier.push((successor, new_path))
 
