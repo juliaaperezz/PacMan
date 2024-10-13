@@ -155,7 +155,7 @@ def depth_first_search(problem):
             return path
 
         # If the state has not been visited, expand it
-        if state not in visited:
+        if state not in visited and state not in frontier.list:
             visited.add(state)
 
             # Add successors to the frontier
@@ -165,7 +165,7 @@ def depth_first_search(problem):
                 
                 #if successor not in visited:
             for successor, action, step_cost in successors:
-                if successor not in visited : #and successor not in [s for s, _ in frontier.list]
+                if successor not in visited and successor not in frontier.list:
                     new_path = path + [action]
                     frontier.push((successor, new_path))
 
@@ -200,7 +200,7 @@ def breadth_first_search(problem):
 
             # Add successors to the frontier
             for successor, action, step_cost in problem.get_successors(state):
-                if successor not in visited:
+                if successor not in visited and successor not in frontier.list:
                     new_path = path + [action]
                     frontier.push((successor, new_path))
 
@@ -277,7 +277,7 @@ def a_star_search(problem, heuristic=null_heuristic):
 
             # Add successors to the frontier
             for successor, action, step_cost in problem.get_successors(state):
-                new_cost = cost_so_far[state] + step_cost + heuristic
+                new_cost = cost_so_far[state] + step_cost + heuristic(state, problem)
                 if successor not in visited or new_cost < cost_so_far.get(successor, float('inf')):
                     cost_so_far[successor] = new_cost
                     new_path = path + [action]
