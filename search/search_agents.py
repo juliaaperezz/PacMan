@@ -302,10 +302,9 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        pacman_position = tuple(self.startingPosition)
-        corner_position = tuple(self.corners)
-        pacman_position[0] = tuple(pacman_position[0])
-        return [pacman_position,corner_position]
+        pacman_position = self.startingPosition
+        corner_position = self.corners
+        return ((pacman_position,corner_position),None,1)
         util.raiseNotDefined()
 
     def is_goal_state(self, state):
@@ -314,7 +313,9 @@ class CornersProblem(search.SearchProblem):
         """
         "*** YOUR CODE HERE ***"
         print("Goal_state:" + str(not state[1]))
-        if not state[1]:
+        print(state)
+        pacman_position, corners = state[0]
+        if not corners:
             return True
         else:
             return False
@@ -332,13 +333,17 @@ class CornersProblem(search.SearchProblem):
         """
         print("works?")
         successors = []
-        current_position, unvisited_corners = state
+        current_position= state[0][0]
+        unvisited_corners = state[0][1]
 
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
             # Here's a code snippet for figuring out whether a new position hits a wall:
 
             "*** YOUR CODE HERE ***"
+            print(state)
+            print(state[0])
+            print(current_position)
             x,y = current_position
             dx, dy = Actions.direction_to_vector(action)
             next_x, next_y = int(x + dx), int(y + dy)
@@ -346,11 +351,10 @@ class CornersProblem(search.SearchProblem):
             if not self.walls[next_x][next_y]:
                 next_position = (next_x, next_y)
 
-                new_corners = list(unvisited_corners)
-                if next_position in new_corners:
-                    new_corners.remove(next_position)
-                new_corners = tuple(new_corners)
-                successors.append(((next_position,new_corners),action,1))
+                #new_corners = list(unvisited_corners)
+                if next_position in unvisited_corners:
+                    unvisited_corners.remove(next_position)
+                successors.append(((next_position,unvisited_corners),action,1))
         self._expanded += 1 # DO NOT CHANGE
         return successors
 

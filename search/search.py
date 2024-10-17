@@ -179,9 +179,9 @@ def breadth_first_search(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
     # Initialize the frontier with the start state
+    print("Start of BFS")
     frontier = Queue()
-    start_state = problem.get_start_state()
-    start_state = (tuple(start_state[0]), tuple(start_state[1]))
+    print("Before push to the frontier of initial state")
     frontier.push((problem.get_start_state(), []))
 
 
