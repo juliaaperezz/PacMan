@@ -180,11 +180,14 @@ def breadth_first_search(problem):
     "*** YOUR CODE HERE ***"
     # Initialize the frontier with the start state
     frontier = Queue()
+    start_state = problem.get_start_state()
+    start_state = (tuple(start_state[0]), tuple(start_state[1]))
     frontier.push((problem.get_start_state(), []))
-    
+
+
     # Initialize an empty set to track visited nodes
     visited = set()
-
+    print("Before while in BFS")
     while not frontier.is_empty():
         # Get the current state and the path to reach it
         state, path = frontier.pop()
@@ -195,10 +198,13 @@ def breadth_first_search(problem):
             return path
 
         # If the state has not been visited, expand it
-        if state not in visited:
+        print("Before state not in visited")
+        if state not in visited:  #aqui esta el proble the list not hashable, es como que el state al ser una lista no puede ponerse en visited o algo asi
+            print("Before adding state to visited")
             visited.add(state)
 
             # Add successors to the frontier
+            print("Before get_successors")
             for successor, action, step_cost in problem.get_successors(state):
                 if successor not in visited and successor not in frontier.list:
                     new_path = path + [action]
@@ -263,6 +269,7 @@ def a_star_search(problem, heuristic=null_heuristic):
     # Dictionary to store the cost to reach each state
     cost_so_far = {problem.get_start_state(): 0}
 
+    print("Before while in a_star")
     while not frontier.is_empty():
         # Get the current state and the path to reach it
         state, path = frontier.pop()
@@ -272,10 +279,12 @@ def a_star_search(problem, heuristic=null_heuristic):
             return path
 
         # If the state has not been visited, expand it
+        print("Before state not in visited")
         if state not in visited:
             visited.add(state)
 
             # Add successors to the frontier
+            print("Before get_successors")
             for successor, action, step_cost in problem.get_successors(state):
                 new_cost = cost_so_far[state] + step_cost + heuristic(state, problem)
                 if successor not in visited or new_cost < cost_so_far.get(successor, float('inf')):
