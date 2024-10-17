@@ -286,11 +286,12 @@ def a_star_search(problem, heuristic=null_heuristic):
             # Add successors to the frontier
             print("Before get_successors")
             for successor, action, step_cost in problem.get_successors(state):
-                new_cost = cost_so_far[state] + step_cost + heuristic(state, problem)
+                new_cost = cost_so_far[state] + step_cost
                 if successor not in visited or new_cost < cost_so_far.get(successor, float('inf')):
                     cost_so_far[successor] = new_cost
+                    priority = new_cost + heuristic(successor, problem)
                     new_path = path + [action]
-                    frontier.push((successor, new_path), new_cost)
+                    frontier.push((successor, new_path), priority)
 
     # If no solution is found, raise an exception
     util.raise_not_defined()

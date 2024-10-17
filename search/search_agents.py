@@ -560,7 +560,30 @@ def food_heuristic(state, problem):
     """
     position, food_grid = state
     "*** YOUR CODE HERE ***"
-    return 0
+    minimumDistanceToAPizzaDot = 0
+    obstaclesToThatPizzaDot = 0
+    for pizzaDot in food_grid:
+        euclid = ((position[0] - pizzaDot[0]) ** 2 + (position[1] - pizzaDot[1]) ** 2 ) ** 0.5
+        
+        obstacles = 0
+       
+        if pizzaDot[0] < position[0]:
+            if (position[0]-1, position[1]) in problem.walls:
+                obstacles += 1
+        if pizzaDot[0] > position[0]:
+            if (position[0]+1, position[1]) in problem.walls:
+                obstacles += 1
+        if pizzaDot[1] < position[1]:
+            if (position[0], position[1]-1) in problem.walls:
+                obstacles += 1
+        if pizzaDot[1] > position[1]:
+            if (position[0], position[1]+1) in problem.walls:
+                obstacles += 1
+        if minimumDistanceToAPizzaDot == 0:
+            minimumDistanceToAPizzaDot = euclid
+        elif minimumDistanceToAPizzaDot > euclid and obstacles < obstaclesToThatPizzaDot:
+            minimumDistanceToAPizzaDot = euclid  
+    return minimumDistanceToAPizzaDot
 
 
 def simplified_corners_heuristic(state, problem):
