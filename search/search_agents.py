@@ -560,30 +560,26 @@ def food_heuristic(state, problem):
     """
     position, food_grid = state
     "*** YOUR CODE HERE ***"
-    minimumDistanceToAPizzaDot = 0
-    obstaclesToThatPizzaDot = 0
-    for pizzaDot in food_grid:
-        euclid = ((position[0] - pizzaDot[0]) ** 2 + (position[1] - pizzaDot[1]) ** 2 ) ** 0.5
-        
-        obstacles = 0
-       
-        if pizzaDot[0] < position[0]:
-            if (position[0]-1, position[1]) in problem.walls:
-                obstacles += 1
-        if pizzaDot[0] > position[0]:
-            if (position[0]+1, position[1]) in problem.walls:
-                obstacles += 1
-        if pizzaDot[1] < position[1]:
-            if (position[0], position[1]-1) in problem.walls:
-                obstacles += 1
-        if pizzaDot[1] > position[1]:
-            if (position[0], position[1]+1) in problem.walls:
-                obstacles += 1
-        if minimumDistanceToAPizzaDot == 0:
-            minimumDistanceToAPizzaDot = euclid
-        elif minimumDistanceToAPizzaDot > euclid and obstacles < obstaclesToThatPizzaDot:
-            minimumDistanceToAPizzaDot = euclid  
-    return minimumDistanceToAPizzaDot
+    food_positions = food_grid.as_list()
+    
+    if not food_positions:
+        return 0
+
+    # Calculate the Manhattan distance to each food dot using manhattan_distance
+    distances_to_food = [util.manhattan_distance(position, food) for food in food_positions]
+
+    min_distance_to_food = min(distances_to_food)
+    max_distance_between_food = 0
+
+    for i in range(len(food_positions)):
+        for j in range(i+1, len(food_positions)):
+            dist = util.manhattan_distance(food_positions[i], food_positions[j])
+            if dist > max_distance_between_food:
+                max_distance_between_food = dist
+    # Find the two farthest food dots and sum their distances
+   
+    return min_distance_to_food + (1.4* max_distance_between_food)
+
 
 
 def simplified_corners_heuristic(state, problem):
