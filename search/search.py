@@ -279,12 +279,12 @@ def a_star_search(problem, heuristic=null_heuristic):
             return path
 
         # If the state has not been visited, expand it
-        print("Before state not in visited")
+        #print("Before state not in visited")
         if state not in visited:
             visited.add(state)
 
             # Add successors to the frontier
-            print("Before get_successors")
+            #print("Before get_successors")
             for successor, action, step_cost in problem.get_successors(state):
                 new_cost = cost_so_far[state] + step_cost
                 if successor not in visited or new_cost < cost_so_far.get(successor, float('inf')):
