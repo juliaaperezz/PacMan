@@ -565,20 +565,19 @@ def food_heuristic(state, problem):
     if not food_positions:
         return 0
 
-    # Calculate the Manhattan distance to each food dot using manhattan_distance
+    #calculate the Manhattan distance to each food dot using manhattan_distance
     distances_to_food = [util.manhattan_distance(position, food) for food in food_positions]
 
     min_distance_to_food = min(distances_to_food)
     max_distance_between_food = 0
-
-    for i in range(len(food_positions)):
+    
+    for i in range(len(food_positions)): #find the two farthest food dots and use the dist between them
         for j in range(i+1, len(food_positions)):
             dist = util.manhattan_distance(food_positions[i], food_positions[j])
             if dist > max_distance_between_food:
                 max_distance_between_food = dist
-    # Find the two farthest food dots and sum their distances
    
-    return min_distance_to_food + (1.4* max_distance_between_food)
+    return min_distance_to_food + (1.4* max_distance_between_food) #we have tried to multiply the max distasnce to give it more importance, between 1.3 and 1.5 it gives us less than 7000
 
 
 
