@@ -139,37 +139,28 @@ def depth_first_search(problem):
     
     from util import Stack
 
-    # Initialize the frontier with the start state
+    #initialize the frontier using stack
     frontier = Stack()
     frontier.push((problem.get_start_state(), []))
     
-    # Initialize an empty set to track visited nodes
     visited = set()
-
+    
     while not frontier.is_empty():
-        # Get the current state and the path to reach it
-        state, path = frontier.pop()
+        state, path = frontier.pop() #we get the path and state that came last
 
-        # If the state is the goal, return the path
-        if problem.is_goal_state(state):
+        if problem.is_goal_state(state): #finish if is goal state
             return path
 
-        # If the state has not been visited, expand it
         if state not in visited and state not in frontier.list:
             visited.add(state)
 
-            # Add successors to the frontier
+            #add successors to the frontier
             successors = problem.get_successors(state)
-            print(f"Current state: {state}, Successors: {successors}")  # to look the order of the successors
-            #for successor, action, step_cost in problem.get_successors(state):
-                
-                #if successor not in visited:
             for successor, action, step_cost in successors:
                 if successor not in visited and successor not in frontier.list:
-                    new_path = path + [action]
-                    frontier.push((successor, new_path))
+                    new_path = path + [action] #update the path
+                    frontier.push((successor, new_path)) #push the new state
 
-    # If no solution is found, raise an exception
     util.raise_not_defined()
     
 
@@ -178,39 +169,29 @@ from util import Queue
 def breadth_first_search(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    # Initialize the frontier with the start state
-    print("Start of BFS")
+    #initialize the frontier using queue
     frontier = Queue()
-    print("Before push to the frontier of initial state")
     frontier.push((problem.get_start_state(), []))
 
-
-    # Initialize an empty set to track visited nodes
     visited = set()
-    print("Before while in BFS")
+
     while not frontier.is_empty():
-        # Get the current state and the path to reach it
-        state, path = frontier.pop()
-        #print("State: ", state)
-    
-        # If the state is the goal, return the path
-        if problem.is_goal_state(state):
+        
+        state, path = frontier.pop() #we get the path and state that came first
+
+
+        if problem.is_goal_state(state): #finish if is goal state
             return path
 
-        # If the state has not been visited, expand it
-        print("Before state not in visited")
-        if state not in visited:  #aqui esta el proble the list not hashable, es como que el state al ser una lista no puede ponerse en visited o algo asi
-            print("Before adding state to visited")
+        #add successors to the frontier
+        if state not in visited:  
             visited.add(state)
 
-            # Add successors to the frontier
-            print("Before get_successors")
             for successor, action, step_cost in problem.get_successors(state):
                 if successor not in visited and successor not in frontier.list:
-                    new_path = path + [action]
-                    frontier.push((successor, new_path))
+                    new_path = path + [action] #update the path
+                    frontier.push((successor, new_path)) #push the new state
 
-    # If no solution is found, raise an exception
     util.raise_not_defined()
 
 from util import PriorityQueue
@@ -218,36 +199,32 @@ from util import PriorityQueue
 def uniform_cost_search(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    # Initialize the frontier with the start state
+    #initialize the frontier using a priorityqueue (the priority will be all the same in this case)
     frontier = PriorityQueue()
     frontier.push((problem.get_start_state(), []), 0)
     
-    # Initialize an empty set to track visited nodes
     visited = set()
-    # Dictionary to store the cost to reach each state
-    cost_so_far = {problem.get_start_state(): 0}
+
+    cost_so_far = {problem.get_start_state(): 0} #we store the cost to reach each state
 
     while not frontier.is_empty():
-        # Get the current state and the path to reach it
-        state, path = frontier.pop()
+        
+        state, path = frontier.pop() #we get the path and state 
 
-        # If the state is the goal, return the path
-        if problem.is_goal_state(state):
+        if problem.is_goal_state(state): #finish if is goal state
             return path
 
-        # If the state has not been visited, expand it
         if state not in visited:
             visited.add(state)
 
-            # Add successors to the frontier
+            #add successors to the frontier
             for successor, action, step_cost in problem.get_successors(state):
-                new_cost = cost_so_far[state] + step_cost
+                new_cost = cost_so_far[state] + step_cost   #update the cost (in this case step_cost is always 1)
                 if successor not in visited or new_cost < cost_so_far.get(successor, float('inf')):
                     cost_so_far[successor] = new_cost
-                    new_path = path + [action]
-                    frontier.push((successor, new_path), new_cost)
+                    new_path = path + [action] #update the path
+                    frontier.push((successor, new_path), new_cost) #push the new state
 
-    # If no solution is found, raise an exception
     util.raise_not_defined()
 
 def null_heuristic(state, problem=None):
@@ -260,40 +237,35 @@ def null_heuristic(state, problem=None):
 def a_star_search(problem, heuristic=null_heuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    # Initialize the frontier with the start state
+    #initialize the frontier using a priorityqueue 
     frontier = PriorityQueue()
     frontier.push((problem.get_start_state(), []), 0)
     
-    # Initialize an empty set to track visited nodes
     visited = set()
-    # Dictionary to store the cost to reach each state
-    cost_so_far = {problem.get_start_state(): 0}
+
+    cost_so_far = {problem.get_start_state(): 0} #we store the cost to reach each state
 
     print("Before while in a_star")
     while not frontier.is_empty():
-        # Get the current state and the path to reach it
-        state, path = frontier.pop()
 
-        # If the state is the goal, return the path
-        if problem.is_goal_state(state):
+        state, path = frontier.pop() #we get the path and state 
+
+        if problem.is_goal_state(state): #finish if is goal state
             return path
 
-        # If the state has not been visited, expand it
-        #print("Before state not in visited")
+
         if state not in visited:
             visited.add(state)
 
-            # Add successors to the frontier
-            #print("Before get_successors")
+            #add successors to the frontier
             for successor, action, step_cost in problem.get_successors(state):
-                new_cost = cost_so_far[state] + step_cost
+                new_cost = cost_so_far[state] + step_cost #update the cost 
                 if successor not in visited or new_cost < cost_so_far.get(successor, float('inf')):
                     cost_so_far[successor] = new_cost
-                    priority = new_cost + heuristic(successor, problem)
-                    new_path = path + [action]
-                    frontier.push((successor, new_path), priority)
+                    priority = new_cost + heuristic(successor, problem) #we sum the heuristic to the cost
+                    new_path = path + [action] #update the path
+                    frontier.push((successor, new_path), priority) #push the new state
 
-    # If no solution is found, raise an exception
     util.raise_not_defined()
 
 # Abbreviations
