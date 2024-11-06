@@ -141,7 +141,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
     """
     Your minimax agent (question 2)
     """
-
+    
     def get_action(self, game_state):
         """
         Returns the minimax action from the current game_state using self.depth
@@ -166,6 +166,45 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
+        best_action = None
+        best_value = float('-inf')
+        for action in game_state.get_legal_actions(0):
+            successor_state = game_state.generate_successor(0, action)
+            value = self.minimax(1, 0, successor_state)
+            if value > best_value:
+                best_value = value
+                best_action = action
+
+        return best_action
+        
+    def minimax(self, agent_index, depth, game_state):
+        if game_state.is_win() or game_state.is_lose() or depth == self.depth:
+            return self.evaluation_function(game_state)
+
+        if agent_index == 0:  # Pacman's turn (maximizing player)
+            return self.max_value(agent_index, depth, game_state)
+        else:  # Ghosts' turn (minimizing player)
+            return self.min_value(agent_index, depth, game_state)
+
+    def max_value(self, agent_index, depth, game_state):
+        v = float('-inf')
+        for action in game_state.get_legal_actions(agent_index):
+            successor_state = game_state.generate_successor(agent_index, action)
+            v = max(v, self.minimax(1, depth, successor_state))
+        return v
+
+    def min_value(self, agent_index, depth, game_state):
+        v = float('inf')
+        next_agent = agent_index + 1
+        if next_agent == game_state.get_num_agents():
+            next_agent = 0
+            depth += 1
+        for action in game_state.get_legal_actions(agent_index):
+            successor_state = game_state.generate_successor(agent_index, action)
+            v = min(v, self.minimax(next_agent, depth, successor_state))
+        return v
+        
+        
         util.raise_not_defined()
     
 
