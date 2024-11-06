@@ -68,13 +68,43 @@ class ReflexAgent(Agent):
         """
         # Useful information you can extract from a GameState (pacman.py)
         successor_game_state = current_game_state.generate_pacman_successor(action)
+        last_position = current_game_state.get_pacman_position()
         new_pos = successor_game_state.get_pacman_position()
         new_food = successor_game_state.get_food()
         new_ghost_states = successor_game_state.get_ghost_states()
         new_scared_times = [ghostState.scared_timer for ghostState in new_ghost_states]
         
         "*** YOUR CODE HERE ***"
-        return successor_game_state.get_score()
+        # Calculate the Manhattan distance to the nearest food
+        food_list = new_food.as_list()
+        if food_list:
+            nearest_food_distance = min(manhattan_distance(new_pos, food) for food in food_list)
+        else:
+            nearest_food_distance = 0
+
+        # Calculate the Manhattan distance to the nearest ghost
+        ghost_distances = [manhattan_distance(new_pos, ghost_state.get_position()) for ghost_state in new_ghost_states]
+        nearest_ghost_distance = min(ghost_distances) if ghost_distances else float('inf')
+
+        # Calculate the score
+        score = successor_game_state.get_score()
+
+        # If ghosts are scared, favor states where Pacman is closer to the ghosts
+        scared_ghosts = [ghost_state for ghost_state in new_ghost_states if ghost_state.scared_timer > 0]
+        if scared_ghosts:
+            nearest_scared_ghost_distance = min(manhattan_distance(new_pos, ghost_state.get_position()) for ghost_state in scared_ghosts)
+            score += 200 / (nearest_scared_ghost_distance + 1)
+
+        # Combine factors into a single evaluation score
+        score += 10 / (nearest_food_distance + 1)
+        score -= 10 / (nearest_ghost_distance + 1)
+
+        if last_position == new_pos:
+            score -= 100
+            
+        return score
+
+        #return successor_game_state.get_score()
 
 def score_evaluation_function(current_game_state):
     """
