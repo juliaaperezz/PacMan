@@ -92,6 +92,7 @@ class ReflexAgent(Agent):
         # If ghosts are scared, favor states where Pacman is closer to the ghosts
         scared_ghosts = [ghost_state for ghost_state in new_ghost_states if ghost_state.scared_timer > 0]
         if scared_ghosts:
+            # Calculate the Manhattan distance to the nearest scared ghost
             nearest_scared_ghost_distance = min(manhattan_distance(new_pos, ghost_state.get_position()) for ghost_state in scared_ghosts)
             score += 200 / (nearest_scared_ghost_distance + 1)
 
@@ -169,9 +170,13 @@ class MinimaxAgent(MultiAgentSearchAgent):
         # Pacman's turn (maximizing player)
         best_action = None
         best_value = float('-inf')
+        # Loop through all legal actions and choose the one with the highest value
         for action in game_state.get_legal_actions(0):
+            # Generate the successor state
             successor_state = game_state.generate_successor(0, action)
+            # Calculate the value of the successor state
             value = self.minimax(1, 0, successor_state)
+            # Update the best value and action
             if value > best_value:
                 best_value = value
                 best_action = action
@@ -179,34 +184,43 @@ class MinimaxAgent(MultiAgentSearchAgent):
         return best_action
         
     def minimax(self, agent_index, depth, game_state):
+        # Check if the game state is a terminal state or if the depth limit has been reached
         if game_state.is_win() or game_state.is_lose() or depth == self.depth:
             return self.evaluation_function(game_state)
-
+        
+        # Determine if it's Pacman's turn or the ghosts' turn
         if agent_index == 0:  # Pacman's turn (maximizing player)
             return self.max_value(agent_index, depth, game_state)
         else:  # Ghosts' turn (minimizing player)
             return self.min_value(agent_index, depth, game_state)
 
+
     def max_value(self, agent_index, depth, game_state):
         v = float('-inf')
+        # Loop through all legal actions and choose the one with the highest value
         for action in game_state.get_legal_actions(agent_index):
+            # Generate the successor state
             successor_state = game_state.generate_successor(agent_index, action)
+            # Recursively call minimax for the next agent
             v = max(v, self.minimax(1, depth, successor_state))
         return v
 
     def min_value(self, agent_index, depth, game_state):
         v = float('inf')
         next_agent = agent_index + 1
+        # If all agents have taken their turn, increment the depth
         if next_agent == game_state.get_num_agents():
             next_agent = 0
             depth += 1
+            
+        # Loop through all legal actions and choose the one with the lowest value
         for action in game_state.get_legal_actions(agent_index):
+            # Generate the successor state
             successor_state = game_state.generate_successor(agent_index, action)
+            # Recursively call minimax for the next agent
             v = min(v, self.minimax(next_agent, depth, successor_state))
         return v
         
-        
-        util.raise_not_defined()
     
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
@@ -218,13 +232,18 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         """
         Returns the minimax action using self.depth and self.evaluation_function
         """
+        # Pacman's turn (maximizing player)
         best_action = None
         best_value = float('-inf')
         alpha = float('-inf')
         beta = float('inf')
+        # Loop through all legal actions and choose the one with the highest value
         for action in game_state.get_legal_actions(0):
+            # Generate the successor state
             successor_state = game_state.generate_successor(0, action)
+            # Calculate the value of the successor state
             value = self.minimax(1, 0, successor_state, alpha, beta)
+            # Update the best value and action
             if value > best_value:
                 best_value = value
                 best_action = action
@@ -233,18 +252,26 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         return best_action
 
     def minimax(self, agent_index, depth, game_state, alpha, beta):
+        # Check if the game state is a terminal state or if the depth limit has been reached
         if game_state.is_win() or game_state.is_lose() or depth == self.depth:
             return self.evaluation_function(game_state)
 
+        # Determine if it's Pacman's turn or the ghosts' turn
         if agent_index == 0:  # Pacman's turn (maximizing player)
             return self.max_value(agent_index, depth, game_state, alpha, beta)
         else:  # Ghosts' turn (minimizing player)
             return self.min_value(agent_index, depth, game_state, alpha, beta)
+        
+        
     def max_value(self, agent_index, depth, game_state, alpha, beta):
         v = float('-inf')
+        # Loop through all legal actions and choose the one with the highest value
         for action in game_state.get_legal_actions(agent_index):
+            # Generate the successor state
             successor_state = game_state.generate_successor(agent_index, action)
+            # Recursively call minimax for the next agent
             v = max(v, self.minimax(1, depth, successor_state, alpha, beta))
+            # Prune the search tree if the value is greater than beta
             if v > beta:
                 return v
             alpha = max(alpha, v)
@@ -253,12 +280,18 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     def min_value(self, agent_index, depth, game_state, alpha, beta):
         v = float('inf')
         next_agent = agent_index + 1
+        # If all agents have taken their turn, increment the depth
         if next_agent == game_state.get_num_agents():
             next_agent = 0
             depth += 1
+            
+        # Loop through all legal actions and choose the one with the lowest value
         for action in game_state.get_legal_actions(agent_index):
+            # Generate the successor state
             successor_state = game_state.generate_successor(agent_index, action)
+            # Recursively call minimax for the next agent
             v = min(v, self.minimax(next_agent, depth, successor_state, alpha, beta))
+            # Prune the search tree if the value is less than alpha
             if v < alpha:
                 return v
             beta = min(beta, v)
