@@ -166,6 +166,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
+        # Pacman's turn (maximizing player)
         best_action = None
         best_value = float('-inf')
         for action in game_state.get_legal_actions(0):
