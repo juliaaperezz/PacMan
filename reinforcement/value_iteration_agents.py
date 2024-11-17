@@ -66,6 +66,17 @@ class ValueIterationAgent(ValueEstimationAgent):
           value iteration, V_k+1(...) depends on V_k(...)'s.
         """
         "*** YOUR CODE HERE ***"
+        for i in range(self.iterations):
+            new_values = self.values.copy()
+            for state in self.mdp.get_states():
+                if self.mdp.is_terminal(state):
+                    continue
+                action_values = []
+                for action in self.mdp.get_possible_actions(state):
+                    action_values.append(self.compute_q_value_from_values(state, action))
+                if action_values:
+                    new_values[state] = max(action_values)
+            self.values = new_values
             
     def get_value(self, state):
         """
@@ -78,8 +89,12 @@ class ValueIterationAgent(ValueEstimationAgent):
           Compute the Q-value of action in state from the
           value function stored in self.values.
         """
-        "*** YOUR CODE HERE ***"
-        util.raise_not_defined()
+        q_value = 0
+        for next_state, prob in self.mdp.get_transition_states_and_probs(state, action):
+            reward = self.mdp.get_reward(state, action, next_state)
+            q_value += prob * (reward + self.discount * self.values[next_state])
+        return q_value
+
 
     def compute_action_from_values(self, state):
         """
@@ -91,7 +106,16 @@ class ValueIterationAgent(ValueEstimationAgent):
           terminal state, you should return None.
         """
         "*** YOUR CODE HERE ***"
-        util.raise_not_defined()
+        if self.mdp.is_terminal(state):
+            return None
+        best_action = None
+        best_value = float('-inf')
+        for action in self.mdp.get_possible_actions(state):
+            q_value = self.compute_q_value_from_values(state, action)
+            if q_value > best_value:
+                best_value = q_value
+                best_action = action
+        return best_action
 
     def get_policy(self, state):
         return self.compute_action_from_values(state)
