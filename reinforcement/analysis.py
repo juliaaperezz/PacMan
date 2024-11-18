@@ -31,38 +31,52 @@ def question2():
 
 def question3a():
     answer_discount = 0.3
-    answer_noise = 0
-    answer_living_reward = 0
+    answer_noise = 0.0
+    answer_living_reward = 0.0
     return answer_discount, answer_noise, answer_living_reward
     # If not possible, return 'NOT POSSIBLE'
 
 def question3b():
     answer_discount = 0.3
     answer_noise = 0.2
-    answer_living_reward = 0.1
+    answer_living_reward = 0.0
     return answer_discount, answer_noise, answer_living_reward
     # If not possible, return 'NOT POSSIBLE'
 
 def question3c():
     answer_discount = 0.9
-    answer_noise = 0
-    answer_living_reward = 0
+    answer_noise = 0.0
+    answer_living_reward = 0.0
     return answer_discount, answer_noise, answer_living_reward
     # If not possible, return 'NOT POSSIBLE'
 
 def question3d():
     answer_discount = 0.9
     answer_noise = 0.2
-    answer_living_reward = 0
+    answer_living_reward = 0.0
     return answer_discount, answer_noise, answer_living_reward
     # If not possible, return 'NOT POSSIBLE'
 
 def question3e():
-    answer_discount = 1
-    answer_noise = 0
-    answer_living_reward = 1
+    answer_discount = 0.9
+    answer_noise = 0.0
+    answer_living_reward = -1.0
     return answer_discount, answer_noise, answer_living_reward
     # If not possible, return 'NOT POSSIBLE'
+
+
+## Added
+def question6():
+    """
+    Is there an epsilon and a learning rate for which it is highly likely (greater than 99%)
+    that the optimal policy will be learned after 50 iterations? If so, return a 2-item tuple
+    of (epsilon, learning rate). Otherwise, return 'NOT POSSIBLE'.
+    """
+    # After experimenting, we find that a small epsilon and a moderate learning rate work well.
+    answer_epsilon = 0.1
+    answer_learning_rate = 0.5
+    return answer_epsilon, answer_learning_rate
+
 
 def question8():
     answer_epsilon = None
