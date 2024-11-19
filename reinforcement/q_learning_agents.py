@@ -99,7 +99,7 @@ class QLearningAgent(ReinforcementAgent):
         "*** YOUR CODE HERE ***"
         if not legal_actions:
             return None
-
+        #add randomness, so epsilon times it does a random action
         if util.flip_coin(self.epsilon):
             return random.choice(legal_actions)
         else:
@@ -116,7 +116,7 @@ class QLearningAgent(ReinforcementAgent):
           it will be called on your behalf
         """
         "*** YOUR CODE HERE ***"
-        sample = reward + self.discount * self.compute_value_from_q_values(next_state)
+        sample = reward + self.discount * self.compute_value_from_q_values(next_state)  #r + yV(s)'
         self.q_values[(state, action)] = (1 - self.alpha) * self.get_q_value(state, action) + self.alpha * sample
 
     def get_policy(self, state):
