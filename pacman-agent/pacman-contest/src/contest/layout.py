@@ -24,17 +24,16 @@ class Layout:
     A Layout manages the static information about the game board.
     """
 
-    def __init__(self, layout_name, layout_text):
-        self.layout_name = layout_name
-        self.width = len(layout_text[0])
-        self.height = len(layout_text)
+    def __init__(self, layoutText):
+        self.width = len(layoutText[0])
+        self.height = len(layoutText)
         self.walls = Grid(self.width, self.height, False)
         self.food = Grid(self.width, self.height, False)
         self.capsules = []
         self.agentPositions = []
         self.numGhosts = 0
-        self.processLayoutText(layout_text)
-        self.layoutText = layout_text
+        self.processLayoutText(layoutText)
+        self.layoutText = layoutText
         self.totalFood = len(self.food.as_list())
         # self.initializeVisibilityMatrix()
 
@@ -45,10 +44,9 @@ class Layout:
         global VISIBILITY_MATRIX_CACHE
         if reduce(str.__add__, self.layoutText) not in VISIBILITY_MATRIX_CACHE:
             from contest.game import Directions
-            vecs = [(-0.5, 0), (0.5, 0), (0, -0.5), (0, 0.5)]
+            vecs = [(-0.5,0), (0.5,0),(0,-0.5),(0,0.5)]
             dirs = [Directions.NORTH, Directions.SOUTH, Directions.WEST, Directions.EAST]
-            vis = Grid(self.width, self.height, {Directions.NORTH: set(), Directions.SOUTH: set(), Directions.EAST: set(),
-                                                 Directions.WEST: set(), Directions.STOP: set()})
+            vis = Grid(self.width, self.height, {Directions.NORTH:set(), Directions.SOUTH:set(), Directions.EAST:set(), Directions.WEST:set(), Directions.STOP:set()})
             for x in range(self.width):
                 for y in range(self.height):
                     if self.walls[x][y] == False:
@@ -92,7 +90,7 @@ class Layout:
         return "\n".join(self.layoutText)
 
     def deep_copy(self):
-        return Layout(layout_name=self.layout_name, layout_text=self.layoutText[:])
+        return Layout(self.layoutText[:])
 
     def processLayoutText(self, layoutText):
         """
@@ -130,24 +128,22 @@ class Layout:
         elif layoutChar in  ['1', '2', '3', '4']:
             self.agentPositions.append( (int(layoutChar), (x,y)))
             self.numGhosts += 1
-
-
-def get_layout(name, back=2):
+def getLayout(name, back = 2):
     if name.endswith('.lay'):
-        layout = try_to_load('layouts/' + name)
-        if layout is None: layout = try_to_load(name)
+        layout = tryToLoad('layouts/' + name)
+        if layout == None: layout = tryToLoad(name)
     else:
-        layout = try_to_load('layouts/' + name + '.lay')
-        if layout is None: layout = try_to_load(name + '.lay')
-    if layout is None and back >= 0:
-        current_dir = os.path.abspath('.')
+        layout = tryToLoad('layouts/' + name + '.lay')
+        if layout == None: layout = tryToLoad(name + '.lay')
+    if layout == None and back >= 0:
+        curdir = os.path.abspath('.')
         os.chdir('..')
-        layout = get_layout(name, back - 1)
-        os.chdir(current_dir)
+        layout = getLayout(name, back -1)
+        os.chdir(curdir)
     return layout
 
-
-def try_to_load(fullname):
-    if not os.path.exists(fullname): return None
-    with open(fullname, 'r') as f:
-        return Layout(layout_name=fullname[fullname.rfind('/')+1:], layout_text=[line.strip() for line in f])
+def tryToLoad(fullname):
+    if(not os.path.exists(fullname)): return None
+    f = open(fullname)
+    try: return Layout([line.strip() for line in f])
+    finally: f.close()

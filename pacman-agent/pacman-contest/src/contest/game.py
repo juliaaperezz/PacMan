@@ -544,7 +544,6 @@ class Game:
     """
 
     def __init__(self, agents, display, rules, starting_index=0, mute_agents=False, catch_exceptions=False):
-        self.num_moves = None
         self.state = None
         self.agent_crashed = False
         self.agents = agents
@@ -560,8 +559,6 @@ class Game:
         self.agent_timeout = False
         import io
         self.agent_output = [io.StringIO() for _ in agents]
-        self.OLD_STDOUT = None
-        self.OLD_STDERR = None
 
     def get_progress(self):
         if self.game_over:
@@ -576,18 +573,24 @@ class Game:
         self.agent_crashed = True
         self.rules.agent_crash(self, agent_index)
 
+    OLD_STDOUT = None
+    OLD_STDERR = None
+
     def mute(self, agent_index):
         if not self.mute_agents: return
-        self.OLD_STDOUT = sys.stdout
-        self.OLD_STDERR = sys.stderr
+        global OLD_STDOUT, OLD_STDERR
+        import io
+        OLD_STDOUT = sys.stdout
+        OLD_STDERR = sys.stderr
         sys.stdout = self.agent_output[agent_index]
         sys.stderr = self.agent_output[agent_index]
 
     def unmute(self):
         if not self.mute_agents: return
+        global OLD_STDOUT, OLD_STDERR
         # Revert stdout/stderr to originals
-        sys.stdout = self.OLD_STDOUT
-        sys.stderr = self.OLD_STDERR
+        sys.stdout = OLD_STDOUT
+        sys.stderr = OLD_STDERR
 
     def run(self, delay=0):
         """
@@ -613,7 +616,7 @@ class Game:
                 if self.catch_exceptions:
                     try:
                         timed_func = TimeoutFunction(agent.register_initial_state,
-                                                     int(self.rules.get_max_startup_time()))
+                                                     int(self.rules.get_max_startup_time(i)))
                         try:
                             start_time = time.time()
                             timed_func(self.state.deep_copy())
@@ -649,7 +652,7 @@ class Game:
                 if self.catch_exceptions:
                     try:
                         timed_func = TimeoutFunction(agent.observation_function,
-                                                     int(self.rules.get_move_timeout()))
+                                                     int(self.rules.get_move_timeout(agent_index)))
                         try:
                             start_time = time.time()
                             observation = timed_func(self.state.deep_copy())
@@ -673,7 +676,7 @@ class Game:
             if self.catch_exceptions:
                 try:
                     timed_func = TimeoutFunction(agent.get_action,
-                                                 int(self.rules.get_move_timeout()) - int(move_time))
+                                                 int(self.rules.get_move_timeout(agent_index)) - int(move_time))
                     try:
                         start_time = time.time()
                         if skip_action:
@@ -688,11 +691,11 @@ class Game:
 
                     move_time += time.time() - start_time
 
-                    if move_time > self.rules.get_move_warning_time():
+                    if move_time > self.rules.get_move_warning_time(agent_index):
                         self.total_agent_time_warnings[agent_index] += 1
                         print(f"Agent {agent_index} took too long to make a move! This is warning "
                               f"{self.total_agent_time_warnings[agent_index]}", file=sys.stderr)
-                        if self.total_agent_time_warnings[agent_index] > self.rules.get_max_time_warnings():
+                        if self.total_agent_time_warnings[agent_index] > self.rules.get_max_time_warnings(agent_index):
                             print(f"Agent {agent_index} exceeded the maximum number of warnings: "
                                   f"{self.total_agent_time_warnings[agent_index]}", file=sys.stderr)
                             self.agent_timeout = True
@@ -701,7 +704,7 @@ class Game:
                             return
 
                     self.total_agent_times[agent_index] += move_time
-                    if self.total_agent_times[agent_index] > self.rules.get_max_total_time():
+                    if self.total_agent_times[agent_index] > self.rules.get_max_total_time(agent_index):
                         print(
                             f"Agent {agent_index} ran out of time! (time: {self.total_agent_times[agent_index]:1.2f})",
                             file=sys.stderr)
